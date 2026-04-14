@@ -3,7 +3,9 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
   Alert,
+  FlatList,
   Modal,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -11,11 +13,72 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
+import { Post, usePosts } from "../hooks/usePosts";
+import { formatTimeAge, formatTimeRemaining } from "../lib/date-helper";
+
+interface PostCardProps {
+  post: Post,
+  currentUserId?: string
+}
+
+const PostCard = ({ post, currentUserId }: PostCardProps) => {
+  const postUser = post.profiles;
+  const isOwnPost = post.user_id === currentUserId;
+  return (
+    <View style={[styles.postContainer]}>
+      <View style={[styles.postHeader]}>
+        <View style={[styles.userInfo]}>
+          {postUser?.profile_image_url ? (<Image source={{ uri: postUser.profile_image_url }} style={[styles.avatar]} />) : (
+            <View style={[styles.avatar, styles.avatarPlaceholder]}>
+              <Text style={[styles.avatarText]}>
+                {postUser?.name?.[0]?.toUpperCase() || "U"}
+              </Text>
+            </View>
+          )}
+
+          <View>
+            <Text style={[styles.username]}>{isOwnPost ? "You" : `@${postUser?.username}`}</Text>
+            <Text style={[styles.timeAgo]}>{formatTimeAge(post.created_at)}</Text>
+          </View>
+
+          {/* Post content */}
+          <View style={[styles.timeRemainingBadge]}>
+            <Text style={[styles.timeRemainingText]}>
+              {formatTimeRemaining(post.expires_at)}
+            </Text>
+          </View>
+        </View>
+      </View>
+      <Image source={{ uri: post.image_url }} style={[styles.postImage]} contentFit="cover" />
+      <View style={[styles.postFooter]}>
+        {post.description && <Text style={[styles.postDescription]}>{post.description}</Text>}
+        <Text style={[styles.postInfo]}>{isOwnPost ? "Your Post" : `${postUser?.name}' post`} : Expires in {formatTimeRemaining(post.expires_at)}</Text>
+      </View>
+    </View>
+  )
+}
 
 const Index = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [description, setDescription] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false)
+
+  const { createPost, posts } = usePosts()
+  const { user } = useAuth()
+
+  const userActivePost = posts.find((post) =>
+    post.user_id === user?.id &&
+    post.is_active &&
+    new Date(post.expires_at) > new Date());
+
+  const hasActivePost = !!userActivePost
+
+  const onRefresh = async () => {
+    setRefresh(true)
+  }
 
   const pickImage = async () => {
     const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
@@ -70,15 +133,45 @@ const Index = () => {
     ]);
   };
 
+  const handlePost = async () => {
+    if (!previewImage) return;
+    setIsLoading(true)
+    try {
+      await createPost(previewImage, description);
+      setPreviewImage(null)
+      setDescription("")
+      setShowPreview(false)
+    } catch (error) {
+      console.error("Error creating post:", error);
+      Alert.alert("Error", "Failed to create post. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const renderPost = ({ item }: { item: Post }) => (
+    <PostCard post={item} currentUserId={user?.id} />
+  )
+
   return (
     <SafeAreaView style={[styles.container]} edges={["bottom", "top"]}>
+
+      {/* LIST */}
+      <FlatList
+        data={posts}
+        renderItem={renderPost}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={posts.length === 0 ? styles.emptyContent : styles.content}
+        ListEmptyComponent={<Text>No post found</Text>}
+        refreshControl={<RefreshControl refreshing={refresh} onRefresh={onRefresh} />}
+      />
       <TouchableOpacity style={[styles.fab]} onPress={showImagePicker}>
-        <Text style={[styles.fabText]}>+</Text>
+        <Text style={[styles.fabText]}>{hasActivePost ? "↻" : "+"}</Text>
       </TouchableOpacity>
       <Modal visible={showPreview} transparent animationType="fade">
         <View style={[styles.modalContainer]}>
           <View style={[styles.modalContent]}>
-            <Text style={[styles.modalTitle]}>Preview Your Post</Text>
+            <Text style={[styles.modalTitle]}>{hasActivePost ? "Replace Your Post" : "Preview Your Post"}</Text>
             {previewImage && (
               <Image
                 source={{ uri: previewImage }}
@@ -107,8 +200,8 @@ const Index = () => {
               >
                 <Text style={[styles.cancelButtonText]}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.modalButton, styles.postButton]}>
-                <Text style={[styles.postButtonText]}>Post</Text>
+              <TouchableOpacity style={[styles.modalButton, styles.postButton]} onPress={handlePost}>
+                <Text style={[styles.postButtonText]}>{hasActivePost ? "Replace" : "Post"}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -212,5 +305,91 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 100,
+  },
+  emptyContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+
+  postContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    overflow: "hidden",
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  postHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 16,
+  },
+  userInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  avatarPlaceholder: {
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  avatarText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#666",
+  },
+  username: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#000",
+  },
+  timeAgo: {
+    fontSize: 12,
+    color: "#666",
+  },
+  timeRemainingBadge: {
+    backgroundColor: "#000",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  timeRemainingText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  postImage: {
+    width: "100%",
+    aspectRatio: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  postFooter: {
+    padding: 16,
+  },
+  postDescription: {
+    fontSize: 15,
+    color: "#000",
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  postInfo: {
+    fontSize: 14,
+    color: "#666",
   },
 });
