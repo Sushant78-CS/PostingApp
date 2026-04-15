@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Modal,
@@ -66,7 +67,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(false)
 
-  const { createPost, posts } = usePosts()
+  const { createPost, posts, refreshPosts } = usePosts()
   const { user } = useAuth()
 
   const userActivePost = posts.find((post) =>
@@ -78,6 +79,14 @@ const Index = () => {
 
   const onRefresh = async () => {
     setRefresh(true)
+    try {
+      await refreshPosts()
+    } catch (error) {
+      console.error("Error refreshing posts:", error);
+
+    } finally {
+      setRefresh(false)
+    }
   }
 
   const pickImage = async () => {
@@ -200,8 +209,14 @@ const Index = () => {
               >
                 <Text style={[styles.cancelButtonText]}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.modalButton, styles.postButton]} onPress={handlePost}>
-                <Text style={[styles.postButtonText]}>{hasActivePost ? "Replace" : "Post"}</Text>
+              <TouchableOpacity style={[styles.modalButton, styles.postButton]}
+                onPress={handlePost}
+                disabled={isLoading}
+              >
+                {isLoading ?
+                  (<ActivityIndicator size={24} color={"#fff"} />)
+                  :
+                  (<Text style={[styles.postButtonText]}>{hasActivePost ? "Replace" : "Post"}</Text>)}
               </TouchableOpacity>
             </View>
           </View>

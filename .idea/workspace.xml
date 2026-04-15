@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="59e18264-71bd-4372-860d-4a35bb54cf6e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bun.lock" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/reset-project.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/explore.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/animated-icon.module.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/animated-icon.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/animated-icon.web.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/app-tabs.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/app-tabs.web.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/external-link.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/hint-row.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/themed-text.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/themed-view.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/collapsible.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/web-badge.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constants/theme.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/global.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/use-color-scheme.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/use-color-scheme.web.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/use-theme.ts" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="3CDmMn5NQOt0535EOUM8tz8vFSk" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "nodejs_package_manager_path": "bun"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="59e18264-71bd-4372-860d-4a35bb54cf6e" name="Changes" comment="" />
+      <created>1775928469900</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1775928469900</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
