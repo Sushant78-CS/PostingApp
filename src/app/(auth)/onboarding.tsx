@@ -154,6 +154,7 @@ const OnBoardingScreen = () => {
               <Image
                 source={{ uri: profileImage }}
                 style={[styles.profileImage]}
+                cachePolicy={"none"}
               />
             ) : (
               <View style={[styles.placeholderImage]}>

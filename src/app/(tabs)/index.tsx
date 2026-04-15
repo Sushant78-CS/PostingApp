@@ -30,7 +30,7 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
     <View style={[styles.postContainer]}>
       <View style={[styles.postHeader]}>
         <View style={[styles.userInfo]}>
-          {postUser?.profile_image_url ? (<Image source={{ uri: postUser.profile_image_url }} style={[styles.avatar]} />) : (
+          {postUser?.profile_image_url ? (<Image cachePolicy={"none"} source={{ uri: postUser.profile_image_url }} style={[styles.avatar]} />) : (
             <View style={[styles.avatar, styles.avatarPlaceholder]}>
               <Text style={[styles.avatarText]}>
                 {postUser?.name?.[0]?.toUpperCase() || "U"}
@@ -51,7 +51,7 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
           </View>
         </View>
       </View>
-      <Image source={{ uri: post.image_url }} style={[styles.postImage]} contentFit="cover" />
+      <Image cachePolicy={"none"} source={{ uri: post.image_url }} style={[styles.postImage]} contentFit="cover" />
       <View style={[styles.postFooter]}>
         {post.description && <Text style={[styles.postDescription]}>{post.description}</Text>}
         <Text style={[styles.postInfo]}>{isOwnPost ? "Your Post" : `${postUser?.name}' post`} : Expires in {formatTimeRemaining(post.expires_at)}</Text>
@@ -186,6 +186,7 @@ const Index = () => {
                 source={{ uri: previewImage }}
                 style={[styles.previewImage]}
                 contentFit="cover"
+                cachePolicy={"none"}
               />
             )}
             <TextInput

@@ -18,22 +18,26 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
+  isLoading: boolean;
   signUp: (email: string, password: string) => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<void>;
   fetchUserProfile: (userId: string) => Promise<User | null>;
   signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     checkSession();
   }, []);
 
   const checkSession = async () => {
+    setIsLoading(true)
     try {
       const {
         data: { session },
@@ -48,6 +52,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Error checking session:", error);
       setUser(null);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -103,6 +109,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null)
+  }
+
   const signUp = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -130,11 +141,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (userData.onboardingCompleted !== undefined)
         updateData.onboarding_completed = userData.onboardingCompleted;
 
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from("profiles")
         .update(updateData)
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .select()
+        .single();
       if (error) throw error;
+
+      if (data) {
+        const profile = await fetchUserProfile(data.id);
+        setUser(profile);
+      }
+
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;
@@ -143,7 +162,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, signUp, updateUser, fetchUserProfile, signIn }}
+      value={{ user, signUp, updateUser, fetchUserProfile, signIn, signOut, isLoading }}
     >
       {children}
     </AuthContext.Provider>
